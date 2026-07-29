@@ -1,0 +1,39 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+### Added
+- Per-pin close button (✕ overlay) so individual pinned images can be removed
+  without affecting others.
+- Runtime layer-shell detection: the pin window falls back to a normal
+  borderless window on compositors without `wlr-layer-shell` (e.g. GNOME),
+  using `gdk_toplevel_begin_move` for drag-to-move.
+
+## [0.1.0] - 2026-07-29
+
+### Added
+- Region selection with a live magnifier and color picker (Cairo pixel
+  sampling).
+- Annotation tools: rectangle, ellipse, line, arrow, freehand brush, mosaic,
+  and text, with a floating toolbar and color / stroke picker.
+- Pin-to-screen: borderless always-on-top window (layer-shell where supported)
+  with drag-to-move, scroll-to-scale, and Esc / ✕ to close.
+- Copy to clipboard (`Ctrl+C`) and save to file (`Ctrl+S`).
+- Daemon mode (`--daemon`) with Unix-socket IPC and `--trigger` client.
+- Global GNOME keybinding `Ctrl+Alt+A` (registered by `glint-setup-shortcut`).
+- XDG Desktop Portal capture via `ashpd` with GNOME Shell D-Bus fallback.
+- Fast PNG decode via `zune-png`; optional PipeWire ScreenCast fast path
+  (`GLINT_USE_SCREENCAST=1`).
+- Demo mode (`GLINT_DEMO=1`) using a generated test image.
+- Debian packaging via `cargo-deb`, autostart entry, app icon, and postinst
+  scripts; bundles `libgtk4-layer-shell`.
+- Project scaffolding: README, LICENSE (MIT), CONTRIBUTING, CODE_OF_CONDUCT,
+  CHANGELOG, CI, issue/PR templates.
+
+[Unreleased]: https://github.com/Juqi664/glint-screenshot/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/Juqi664/glint-screenshot/releases/tag/v0.1.0

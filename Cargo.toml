@@ -1,0 +1,109 @@
+[package]
+name = "glint-screenshot"
+version = "0.1.0"
+edition = "2021"
+authors = ["Juqi664 <Juqi664@users.noreply.github.com>"]
+description = "An open-source Ubuntu GNOME Wayland-native screenshot and pinning tool, faithfully reproducing the Windows WeChat screenshot interactions"
+license = "MIT"
+repository = "https://github.com/Juqi664/glint-screenshot"
+homepage = "https://github.com/Juqi664/glint-screenshot"
+documentation = "https://github.com/Juqi664/glint-screenshot#readme"
+readme = "README.md"
+keywords = ["screenshot", "wayland", "gnome", "gtk4", "pinning"]
+categories = ["graphics", "gui", "multimedia::images"]
+# MSRV: tested against the Rust version shipped with Ubuntu 24.04 LTS.
+rust-version = "1.75"
+
+# For GTK4 apps on Wayland, enabling LTO is recommended to reduce binary size
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = true
+
+# Speed up the pure-Rust PNG decoder in debug builds so the capture path stays
+# fast during development (the rest of the app stays quick to compile).
+[profile.dev.package.zune-png]
+opt-level = 3
+[profile.dev.package.zune-core]
+opt-level = 3
+
+# ===== Debian packaging (cargo-deb) =====
+# Build with: `cargo deb` (install cargo-deb first via `cargo install cargo-deb`).
+# Produces target/debian/glint-screenshot_<ver>_amd64.deb (or arm64).
+[package.metadata.deb]
+maintainer = "Glint Screenshot Contributors <Juqi664@users.noreply.github.com>"
+section = "graphics"
+priority = "optional"
+depends = "libgtk-4-1 (>= 4.14), libadwaita-1-0 (>= 1.5), libcairo2 (>= 1.18), libglib2.0-0 (>= 2.80), libpipewire-0.3-0 (>= 0.3.70)"
+recommends = "yelp"
+assets = [
+    ["target/release/glint-screenshot", "/usr/bin/glint-screenshot", "755"],
+    ["packaging/io.github.glint.Screenshot.desktop", "/usr/share/applications/io.github.glint.Screenshot.desktop", "644"],
+    ["packaging/autostart/io.github.glint.Screenshot.daemon.desktop", "/etc/xdg/autostart/io.github.glint.Screenshot.daemon.desktop", "644"],
+    ["packaging/icons/hicolor/scalable/apps/io.github.glint.Screenshot.svg", "/usr/share/icons/hicolor/scalable/apps/io.github.glint.Screenshot.svg", "644"],
+    ["packaging/glint-setup-shortcut.sh", "/usr/bin/glint-setup-shortcut", "755"],
+    # Bundle gtk4-layer-shell (not in Ubuntu apt repos) so the .deb is
+    # self-contained. ldconfig in postinst registers it.
+    ["packaging/libs/libgtk4-layer-shell.so.0", "/usr/lib/x86_64-linux-gnu/libgtk4-layer-shell.so.0", "644"],
+]
+maintainer-scripts = "packaging/debian"
+
+[dependencies]
+# ===== GTK4 / GObject ecosystem =====
+# GTK4 main framework (libadwaita style support available via features)
+gtk4 = { version = "0.9", features = ["v4_14"] }
+# glib / gio are GTK4's lower-level deps; pulled in explicitly so we can use
+# MainLoop / D-Bus directly
+glib = "0.20"
+gio = "0.20"
+# gdk4: low-level capabilities for drawing, events, clipboard, toplevel / surface
+gdk4 = { version = "0.9", features = ["v4_14"] }
+# libadwaita: GNOME modern-style component library (optional, for prefs window etc.)
+adw = { version = "0.7", package = "libadwaita" }
+
+# ===== Cairo drawing engine =====
+# cairo-rs: used for all custom drawing — brush, mosaic, magnifier, mask
+cairo-rs = { version = "0.20", features = ["png", "freetype"] }
+
+# ===== Wayland layer-shell support =====
+# gtk4-layer-shell: implements the pin window's "borderless + always-on-top +
+# input passthrough". This is the officially recommended replacement for
+# X11 override-redirect under Wayland.
+gtk4-layer-shell = "0.4"
+
+# ===== Screenshot backend =====
+# ashpd: Rust bindings for the XDG Desktop Portal, the cross-desktop standard
+# screenshot interface
+ashpd = { version = "0.10", default-features = false, features = ["gtk4", "async-std"] }
+# zbus: alternative for calling the GNOME Shell D-Bus interface directly
+zbus = { version = "4", default-features = false, features = ["async-io"] }
+
+# ===== Async runtime =====
+# ashpd defaults to async-std; we keep it consistent to avoid pulling in tokio
+# and ending up with two runtimes
+async-std = "1.12"
+
+# ===== Utility libs =====
+anyhow = "1.0"           # error handling
+thiserror = "1.0"        # custom error types
+log = "0.4"              # logging facade
+env_logger = "0.11"      # logging backend
+image = { version = "0.25", default-features = false, features = ["png"] }  # PNG encode/decode (save / pin)
+# zune-png: extremely fast pure-Rust PNG decoder (SIMD-accelerated). Used on the
+# hot capture path to replace Cairo's slower built-in PNG decoder.
+zune-png = "0.4"
+pipewire = "0.10.0"
+enumflags2 = "0.7.12"
+
+# ===== Layout =====
+# src/
+# ├── main.rs          Entry point: CLI arg parsing, GTK init, drives the main flow
+# ├── lib.rs           Library root, re-exports all modules
+# ├── screenshot.rs    Screenshot service: Portal/D-Bus -> full-screen RGBA -> Cairo ImageSurface
+# ├── selector.rs      Selection & magnifier: fullscreen input-transparent window, mask, magnifier, color picker
+# ├── pin_window.rs    Pin window: borderless always-on-top layer-shell window, scroll scaling, drag-to-move
+# ├── tools/           Drawing tools and command stack
+# │   └── mod.rs       DrawCommand enum + rendering (rect/ellipse/line/arrow/brush/mosaic/text)
+# └── ui/              Toolbar UI and preferences
+#     ├── mod.rs
+#     └── toolbar.rs   Floating toolbar

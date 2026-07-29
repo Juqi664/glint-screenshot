@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+
+jobs:
+  lint-and-build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        run: |
+          rustup toolchain install stable --profile minimal
+          rustup component add rustfmt clippy
+          rustup override set stable
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libgtk-4-dev libadwaita-1-dev libcairo2-dev \
+            libglib2.0-dev libpipewire-0.3-dev \
+            meson ninja-build pkg-config
+
+      # gtk4-layer-shell is not in Ubuntu apt repos, so build the C library
+      # from source and install it system-wide before building the Rust crate.
+      - name: Build & install libgtk4-layer-shell from source
+        run: |
+          git clone --depth=1 https://github.com/wmww/gtk4-layer-shell.git /tmp/gtk4-layer-shell
+          meson setup /tmp/gtk4-layer-shell /tmp/gtk4-layer-shell-build --prefix=/usr/local
+          ninja -C /tmp/gtk4-layer-shell-build
+          sudo ninja -C /tmp/gtk4-layer-shell-build install
+          sudo ldconfig
+
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: cargo-${{ runner.os }}-${{ hashFiles('Cargo.lock') }}
+
+      - name: rustfmt check
+        run: cargo fmt --all -- --check
+
+      - name: Clippy
+        run: cargo clippy --all-targets -- -D warnings
+
+      - name: Build (release)
+        run: cargo build --release --all-targets
+
+      - name: Test
+        run: cargo test --all --no-run

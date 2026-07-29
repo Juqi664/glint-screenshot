@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Glint Screenshot Daemon
+Comment=Background daemon that listens for the screenshot shortcut (Ctrl+Alt+A)
+Comment[zh_CN]=监听截图快捷键 (Ctrl+Alt+A) 的后台守护进程
+Exec=glint-screenshot --daemon
+Icon=io.github.glint.Screenshot
+Categories=Utility;GTK;
+Terminal=false
+X-GNOME-Autostart-enabled=true
+NoDisplay=true
