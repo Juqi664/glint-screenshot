@@ -85,7 +85,7 @@ async-std = "1.12"
 
 # ===== Utility libs =====
 anyhow = "1.0"           # error handling
-thiserror = "1.0"        # custom error types
+thiserror = "2.0"        # custom error types
 log = "0.4"              # logging facade
 env_logger = "0.11"      # logging backend
 image = { version = "0.25", default-features = false, features = ["png"] }  # PNG encode/decode (save / pin)
