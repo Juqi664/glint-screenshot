@@ -1,0 +1,180 @@
+/* ============================================================
+   glint-screenshot UI — matches the prototype design.
+   All rules are scoped under `.glint-toolbar` so they outrank the
+   default GTK `button` theme rules (two classes beat one element).
+   ============================================================ */
+
+/* ---------- Floating toolbar container ---------- */
+.glint-toolbar {
+  background-color: rgba(24, 26, 30, 0.92);
+  border-radius: 12px;
+  padding: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.50), 0 2px 8px rgba(0, 0, 0, 0.30);
+  color: #e8eaed;
+}
+
+/* Group dividers */
+.glint-toolbar separator {
+  background: rgba(255, 255, 255, 0.08);
+  min-width: 1px;
+  min-height: 18px;
+  margin: 0 4px;
+}
+
+/* ---------- Global reset for every button in the toolbar ----------
+   Neutralize the theme's default background/border/shadow/padding so our
+   custom classes fully control the appearance. */
+.glint-toolbar button {
+  background: transparent;
+  background-image: none;
+  border: none;
+  box-shadow: none;
+  -gtk-icon-shadow: none;
+  text-shadow: none;
+  outline: none;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* ---------- Generic tool buttons (drawing tools, undo/redo) ---------- */
+.glint-toolbar .glint-tbbtn {
+  min-width: 30px;
+  min-height: 30px;
+  padding: 5px;
+  border-radius: 7px;
+  color: #c4c9d4;
+  transition: background 120ms ease, color 120ms ease;
+}
+.glint-toolbar .glint-tbbtn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f0f2f5;
+}
+.glint-toolbar .glint-tbbtn:active {
+  background: rgba(255, 255, 255, 0.12);
+}
+.glint-toolbar .glint-tbbtn:checked {
+  background: rgba(59, 130, 246, 0.15);
+  color: #ffffff;
+  box-shadow: inset 0 0 0 1px rgba(59, 130, 246, 0.30);
+}
+/* Force icon widgets inside tool buttons to a uniform 18px */
+.glint-toolbar .glint-tbbtn image {
+  -gtk-icon-size: 18px;
+}
+
+/* ---------- Color picker dots (plain boxes, no button chrome) ---------- */
+.glint-toolbar .glint-color-dot {
+  min-width: 18px;
+  min-height: 18px;
+  padding: 0;
+  margin: 0 2px;
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-image: none;
+  box-shadow: none;
+  transition: transform 120ms ease, border-color 120ms ease;
+}
+.glint-toolbar .glint-color-dot:hover {
+  filter: brightness(1.12);
+}
+.glint-toolbar .glint-color-active {
+  border-color: rgba(255, 255, 255, 0.85);
+}
+.glint-toolbar .glint-color-red    { background-color: #ef4444; }
+.glint-toolbar .glint-color-orange { background-color: #f97316; }
+.glint-toolbar .glint-color-yellow { background-color: #eab308; }
+.glint-toolbar .glint-color-green  { background-color: #22c55e; }
+.glint-toolbar .glint-color-blue   { background-color: #3b82f6; }
+.glint-toolbar .glint-color-white  { background-color: #f8fafc; border-color: rgba(255,255,255,0.20); }
+.glint-toolbar .glint-color-black  { background-color: #18181b; border-color: rgba(255,255,255,0.30); }
+
+/* ---------- Stroke thickness dots (plain boxes) ---------- */
+.glint-toolbar .glint-stroke-btn {
+  min-width: 24px;
+  min-height: 24px;
+  padding: 0;
+  margin: 0 1px;
+  border-radius: 6px;
+  color: #c4c9d4;
+  transition: background 120ms ease, color 120ms ease;
+}
+.glint-toolbar .glint-stroke-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #f0f2f5;
+}
+.glint-toolbar .glint-stroke-active {
+  background: rgba(59, 130, 246, 0.15);
+  color: #ffffff;
+}
+.glint-toolbar .glint-stroke-dot {
+  border-radius: 9999px;
+  background: currentColor;
+}
+.glint-toolbar .glint-stroke-2 { min-width: 4px;  min-height: 4px; }
+.glint-toolbar .glint-stroke-4 { min-width: 7px;  min-height: 7px; }
+.glint-toolbar .glint-stroke-6 { min-width: 10px; min-height: 10px; }
+.glint-toolbar .glint-stroke-8 { min-width: 14px; min-height: 14px; }
+
+/* ---------- Action buttons ---------- */
+.glint-toolbar .glint-action {
+  border-radius: 7px;
+  min-height: 30px;
+  padding: 0 10px;
+  color: #c4c9d4;
+  font-size: 12px;
+  font-weight: 500;
+  transition: background 120ms ease, color 120ms ease;
+}
+.glint-toolbar .glint-action:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f0f2f5;
+}
+.glint-toolbar .glint-action image {
+  -gtk-icon-size: 14px;
+  color: currentColor;
+}
+/* Primary (Pin): green */
+.glint-toolbar .glint-action-primary {
+  background: #22c55e;
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(34, 197, 94, 0.30);
+}
+.glint-toolbar .glint-action-primary:hover {
+  background: #16a34a;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.40);
+}
+/* Danger (Exit): transparent, red on hover */
+.glint-toolbar .glint-action-danger {
+  min-width: 30px;
+  padding: 6px;
+}
+.glint-toolbar .glint-action-danger:hover {
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+}
+
+/* ===== Pin window close button (top-right overlay) ===== */
+/* Semi-transparent circular button; fully opaque on hover so it does not
+   distract from the pinned image but is easy to click to remove a single pin. */
+.pin-close {
+  min-width: 22px;
+  min-height: 22px;
+  padding: 3px;
+  margin: 6px;
+  border-radius: 9999px;
+  background: rgba(0, 0, 0, 0.45);
+  color: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  transition: opacity 120ms ease, background 120ms ease;
+  opacity: 0.45;
+}
+.pin-close:hover {
+  opacity: 1.0;
+  background: rgba(239, 68, 68, 0.90);
+  color: #ffffff;
+}

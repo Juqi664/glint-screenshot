@@ -1,0 +1,7 @@
+# rustfmt configuration for glint-screenshot.
+# Only stable options are used so `cargo fmt` works on stable Rust (the MSRV
+# toolchain) and the CI fmt check is deterministic.
+
+edition = "2021"
+max_width = 100
+reorder_imports = true

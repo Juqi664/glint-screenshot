@@ -1,0 +1,29 @@
+version: 2
+updates:
+  # Keep Rust dependencies fresh
+  - package-ecosystem: "cargo"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    labels: ["dependencies"]
+    commit-message:
+      prefix: "deps"
+    groups:
+      gtk-ecosystem:
+        patterns: ["gtk4", "glib", "gio", "gdk4", "libadwaita", "gtk4-layer-shell"]
+      portal-async:
+        patterns: ["ashpd", "zbus", "async-std"]
+      image-codecs:
+        patterns: ["zune-png", "image"]
+
+  # Keep GitHub Actions versions fresh
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels: ["dependencies", "ci"]
+    commit-message:
+      prefix: "ci"

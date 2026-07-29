@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <!-- App icon for glint-screenshot: a rounded tile with a screenshot region
+       (dashed) and a glint sparkle. Vector, recolors via currentColor. -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3b82f6"/>
+      <stop offset="1" stop-color="#2563eb"/>
+    </linearGradient>
+  </defs>
+  <rect x="8" y="8" width="112" height="112" rx="24" ry="24" fill="url(#bg)"/>
+  <!-- screenshot region: dashed rounded rectangle -->
+  <rect x="30" y="34" width="68" height="52" rx="6" ry="6"
+        fill="none" stroke="#ffffff" stroke-width="4" stroke-dasharray="8 6" opacity="0.95"/>
+  <!-- corner handles -->
+  <circle cx="30" cy="34" r="4.5" fill="#ffffff"/>
+  <circle cx="98" cy="34" r="4.5" fill="#ffffff"/>
+  <circle cx="30" cy="86" r="4.5" fill="#ffffff"/>
+  <circle cx="98" cy="86" r="4.5" fill="#ffffff"/>
+  <!-- glint sparkle (top-right) -->
+  <path d="M96 22 l3.2 8.6 l8.6 3.2 l-8.6 3.2 l-3.2 8.6 l-3.2 -8.6 l-8.6 -3.2 l8.6 -3.2 z"
+        fill="#fde68a"/>
+</svg>

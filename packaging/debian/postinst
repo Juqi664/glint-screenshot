@@ -1,0 +1,32 @@
+#!/bin/sh
+# Debian postinst: refresh icon + desktop caches so the app icon and .desktop
+# entry appear immediately, and print a hint to register the shortcut.
+set -e
+
+case "$1" in
+    configure)
+        # Register the bundled libgtk4-layer-shell.so.0 (shipped in
+        # /usr/lib/x86_64-linux-gnu because it is not in Ubuntu apt repos).
+        ldconfig
+        if command -v gtk4-update-icon-cache >/dev/null 2>&1; then
+            gtk4-update-icon-cache -f /usr/share/icons/hicolor >/dev/null 2>&1 || true
+        fi
+        if command -v update-desktop-database >/dev/null 2>&1; then
+            update-desktop-database -q /usr/share/applications >/dev/null 2>&1 || true
+        fi
+        echo ""
+        echo "glint-screenshot installed."
+        echo "  - Start the daemon now:        nohup glint-screenshot --daemon >/dev/null 2>&1 &"
+        echo "  - Register Ctrl+Alt+A shortcut: glint-setup-shortcut"
+        echo "  - The daemon auto-starts on next login via /etc/xdg/autostart."
+        echo ""
+        ;;
+    abort-upgrade|abort-remove|abort-deconfigure)
+        ;;
+    *)
+        echo "postinst called with unknown argument \`$1'" >&2
+        exit 1
+        ;;
+esac
+
+exit 0

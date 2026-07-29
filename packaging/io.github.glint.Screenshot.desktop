@@ -1,0 +1,14 @@
+[Desktop Entry]
+Type=Application
+Name=Glint Screenshot
+GenericName=Screenshot & Pin Tool
+Comment=GNOME Wayland-native screenshot, annotation and pinning tool
+Comment[zh_CN]=GNOME Wayland 原生截图、标注与贴图工具
+Exec=glint-screenshot --trigger
+Icon=io.github.glint.Screenshot
+Categories=Utility;Graphics;GTK;
+Keywords=screenshot;capture;snip;pin;annotate;
+Terminal=false
+StartupNotify=true
+StartupWMClass=glint-screenshot
+X-GNOME-UsesNotifications=true

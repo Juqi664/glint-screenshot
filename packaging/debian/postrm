@@ -1,0 +1,12 @@
+#!/bin/sh
+# Debian postrm: refresh the dynamic linker cache after removing the bundled
+# libgtk4-layer-shell.so.0.
+set -e
+
+case "$1" in
+    remove|purge|disappear|upgrade|failed-upgrade)
+        ldconfig
+        ;;
+esac
+
+exit 0

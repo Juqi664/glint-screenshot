@@ -1,0 +1,68 @@
+name: Bug report
+description: Report something that is broken or behaves incorrectly
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to file a bug report! Please fill in the
+        fields below so we can reproduce it.
+
+  - type: input
+    id: gnome-version
+    attributes:
+      label: GNOME / mutter version
+      placeholder: "e.g. GNOME Shell 46.0 (run `gnome-shell --version`)"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: launch
+    attributes:
+      label: How did you launch glint-screenshot?
+      options:
+        - ./run.sh (single-shot)
+        - ./run.sh --daemon
+        - ./run.sh --trigger
+        - GLINT_DEMO=1 ./run.sh
+        - Binary directly (not via run.sh)
+        - Installed .deb
+    validations:
+      required: true
+
+  - type: input
+    id: env
+    attributes:
+      label: Environment variables set
+      placeholder: "e.g. GLINT_USE_SCREENCAST=1, RUST_LOG=debug"
+    validations:
+      required: false
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: A clear description of the bug and what you expected instead.
+      placeholder: "Steps to reproduce: 1. ... 2. ... Expected: ... Actual: ..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: |
+        Run with `RUST_LOG=debug ./run.sh` and paste the output around the
+        failure. This is automatically formatted as code, no backticks needed.
+      render: shell
+    validations:
+      required: false
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots / recording
+      description: Drag a screenshot or GIF here if it helps show the issue.
+    validations:
+      required: false
