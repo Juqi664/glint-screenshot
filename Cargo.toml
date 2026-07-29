@@ -63,7 +63,7 @@ adw = { version = "0.7", package = "libadwaita" }
 
 # ===== Cairo drawing engine =====
 # cairo-rs: used for all custom drawing — brush, mosaic, magnifier, mask
-cairo-rs = { version = "0.20", features = ["png", "freetype"] }
+cairo-rs = { version = "0.22", features = ["png", "freetype"] }
 
 # ===== Wayland layer-shell support =====
 # gtk4-layer-shell: implements the pin window's "borderless + always-on-top +
