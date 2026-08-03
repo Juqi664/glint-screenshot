@@ -19,7 +19,7 @@ so I wrote one in Rust + GTK4.
 
 ## Status
 
-Early. v0.1.0, tested on Ubuntu 24.04 / GNOME 46. The pin window's
+Early. v0.1.1, tested on Ubuntu 24.04 / GNOME 46. The pin window's
 always-on-top only works on compositors that implement wlr-layer-shell
 (Sway / Hyprland / KDE); on GNOME a pin is a normal borderless window brought
 to front — see Limitations below.
@@ -28,7 +28,7 @@ to front — see Limitations below.
 
 .deb (Ubuntu/Debian):
 
-    sudo dpkg -i glint-screenshot_0.1.0-1_amd64.deb
+    sudo dpkg -i glint-screenshot_0.1.1-1_amd64.deb
     glint-setup-shortcut   # registers Ctrl+Alt+A
 
 The .deb bundles libgtk4-layer-shell (not in Ubuntu apt), so it's
@@ -71,6 +71,9 @@ back to the Portal on failure).
 
 Primary target is Ubuntu 24.04 LTS / GNOME 46 / Wayland. Other
 wlr-layer-shell-capable compositors should work for pinning.
+
+Multi-monitor: the Portal returns the full virtual desktop; the selector
+opens one fullscreen window per monitor so every display is selectable.
 
 ## Limitations
 

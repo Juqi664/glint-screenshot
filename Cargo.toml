@@ -1,6 +1,6 @@
 [package]
 name = "glint-screenshot"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = ["Juqi664 <Juqi664@users.noreply.github.com>"]
 description = "An open-source Ubuntu GNOME Wayland-native screenshot and pinning tool, faithfully reproducing the Windows WeChat screenshot interactions"
