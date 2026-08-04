@@ -54,10 +54,10 @@ maintainer-scripts = "packaging/debian"
 gtk4 = { version = "0.9", features = ["v4_14"] }
 # glib / gio are GTK4's lower-level deps; pulled in explicitly so we can use
 # MainLoop / D-Bus directly
-glib = "0.20"
-gio = "0.20"
+glib = "0.22"
+gio = "0.22"
 # gdk4: low-level capabilities for drawing, events, clipboard, toplevel / surface
-gdk4 = { version = "0.9", features = ["v4_14"] }
+gdk4 = { version = "0.11", features = ["v4_14"] }
 # libadwaita: GNOME modern-style component library (optional, for prefs window etc.)
 adw = { version = "0.7", package = "libadwaita" }
 
@@ -69,7 +69,7 @@ cairo-rs = { version = "0.20", features = ["png", "freetype"] }
 # gtk4-layer-shell: implements the pin window's "borderless + always-on-top +
 # input passthrough". This is the officially recommended replacement for
 # X11 override-redirect under Wayland.
-gtk4-layer-shell = "0.4"
+gtk4-layer-shell = "0.5"
 
 # ===== Screenshot backend =====
 # ashpd: Rust bindings for the XDG Desktop Portal, the cross-desktop standard
