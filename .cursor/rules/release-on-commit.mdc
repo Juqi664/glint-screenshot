@@ -1,0 +1,37 @@
+---
+description: Every push to the open-source repo must tag and publish a GitHub Release with artifacts
+alwaysApply: true
+---
+
+# Release on every commit
+
+When the user asks to commit / push changes to the open-source GitHub repo
+(`Juqi664/glint-screenshot`), always do the full release pipeline — not just
+`git commit` + `git push`.
+
+## Required steps (in order)
+
+1. **Bump** `Cargo.toml` patch version (0.1.x → 0.1.x+1) unless the user
+   names a different semver level.
+2. **Changelog**: move `[Unreleased]` notes into the new version section;
+   update compare links at the bottom.
+3. **README**: bump any version strings that reference the `.deb` name.
+4. **Commit** as `Juqi664 <juqi664@163.com>` only — never Cursor agent /
+   work email; no `Co-authored-by: Cursor` trailer.
+5. **Build artifacts**:
+   - `cargo deb` → `target/debian/glint-screenshot_<ver>-1_amd64.deb`
+   - portable tarball under `target/release-dist/`
+   - `SHA256SUMS.txt` + short `RELEASE_NOTES_v<ver>.md`
+6. **Tag**: annotated `v<ver>` matching `Cargo.toml`.
+7. **Push**: `git push origin HEAD` and `git push origin v<ver>`.
+8. **GitHub Release**: `gh release create v<ver> --latest` with the `.deb`,
+   tarball, and `SHA256SUMS.txt`.
+
+## Author identity
+
+```
+git config user.name  → Juqi664
+git config user.email → juqi664@163.com
+```
+
+Do not use work emails or Cursor agent identity.
