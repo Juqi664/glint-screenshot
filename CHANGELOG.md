@@ -7,6 +7,8 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-08-04
+
 ### Fixed
 - Save now opens a native path picker (FileDialog). The previous async
   future panicked inside the selector's nested MainLoop, so no dialog
@@ -53,6 +55,7 @@ First release.
 - Project scaffolding: README, LICENSE (MIT), CONTRIBUTING, CODE_OF_CONDUCT,
   CHANGELOG, CI, issue/PR templates.
 
-[Unreleased]: https://github.com/Juqi664/glint-screenshot/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/Juqi664/glint-screenshot/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/Juqi664/glint-screenshot/releases/tag/v0.1.2
 [0.1.1]: https://github.com/Juqi664/glint-screenshot/releases/tag/v0.1.1
 [0.1.0]: https://github.com/Juqi664/glint-screenshot/releases/tag/v0.1.0

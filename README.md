@@ -19,7 +19,7 @@ so I wrote one in Rust + GTK4.
 
 ## Status
 
-Early. v0.1.1, tested on Ubuntu 24.04 / GNOME 46. The pin window's
+Early. v0.1.2, tested on Ubuntu 24.04 / GNOME 46. The pin window's
 always-on-top only works on compositors that implement wlr-layer-shell
 (Sway / Hyprland / KDE); on GNOME a pin is a normal borderless window brought
 to front — see Limitations below.
@@ -28,7 +28,7 @@ to front — see Limitations below.
 
 .deb (Ubuntu/Debian):
 
-    sudo dpkg -i glint-screenshot_0.1.1-1_amd64.deb
+    sudo dpkg -i glint-screenshot_0.1.2-1_amd64.deb
     glint-setup-shortcut   # registers Ctrl+Alt+A
 
 The .deb bundles libgtk4-layer-shell (not in Ubuntu apt), so it's
