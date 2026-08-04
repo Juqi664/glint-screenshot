@@ -760,28 +760,44 @@ impl Selector {
                     log::info!("Save button clicked");
                     let s = *sel.borrow();
                     let cmds_snapshot = cmds.borrow().clone();
-                    let surf_clone = surf.clone();
+                    let rendered = match crop_and_render(&surf, s, &cmds_snapshot) {
+                        Ok(r) => r,
+                        Err(e) => {
+                            log::error!("Render failed: {e}");
+                            return;
+                        }
+                    };
+                    let win = windows[host.get().min(windows.len() - 1)].clone();
                     let outcome = outcome.clone();
                     let loopc = loopc.clone();
-                    let win = windows[host.get().min(windows.len() - 1)].clone();
                     let windows = windows.clone();
-                    glib::spawn_future_local(async move {
-                        match crop_and_render(&surf_clone, s, &cmds_snapshot) {
-                            Ok(rendered) => {
-                                if let Some(path) = prompt_save_path(&win).await {
-                                    if let Err(e) = save_png(&rendered, &path) {
-                                        log::error!("Save failed: {e}");
-                                    } else {
-                                        log::info!("Saved to {}", path.display());
-                                    }
-                                }
+                    // Hide overlays while the portal file chooser is up so it
+                    // isn't covered by our fullscreen windows on Wayland.
+                    for w in windows.iter() {
+                        w.set_visible(false);
+                    }
+                    // Callback-based FileDialog — do NOT use spawn_future_local
+                    // here: we are inside a nested MainLoop and the glib local
+                    // executor cannot re-enter (EnterError panic).
+                    prompt_save_path(&win, move |path| {
+                        let Some(path) = path else {
+                            log::info!("Save cancelled — restoring selector");
+                            for w in windows.iter() {
+                                w.set_visible(true);
+                                w.present();
                             }
-                            Err(e) => log::error!("Render failed: {e}"),
+                            return;
+                        };
+                        if let Err(e) = save_png(&rendered, &path) {
+                            log::error!("Save failed: {e}");
+                            for w in windows.iter() {
+                                w.set_visible(true);
+                                w.present();
+                            }
+                            return;
                         }
+                        log::info!("Saved to {}", path.display());
                         *outcome.borrow_mut() = Some(Outcome::Done);
-                        for w in windows.iter() {
-                            w.set_visible(false);
-                        }
                         loopc.quit();
                     });
                 })
@@ -1374,25 +1390,79 @@ fn is_command_trivial(c: &DrawCommand) -> bool {
     }
 }
 
-async fn prompt_save_path(parent: &Window) -> Option<std::path::PathBuf> {
+/// Open a native "Save As" dialog and invoke `on_done` with the chosen path
+/// (or `None` if the user cancelled).
+///
+/// Uses the callback form of `FileDialog::save` so it works inside the
+/// selector's nested `MainLoop` (async `spawn_future_local` cannot re-enter).
+fn prompt_save_path(parent: &Window, on_done: impl FnOnce(Option<std::path::PathBuf>) + 'static) {
     let dialog = gtk4::FileDialog::new();
     dialog.set_title("Save screenshot");
+    dialog.set_modal(true);
+    dialog.set_accept_label(Some("Save"));
+
     let filter = gtk4::FileFilter::new();
     filter.set_name(Some("PNG image"));
     filter.add_pattern("*.png");
+    filter.add_mime_type("image/png");
     let filters = gtk4::gio::ListStore::new::<gtk4::FileFilter>();
     filters.append(&filter);
     dialog.set_filters(Some(&filters));
-    match dialog.save_future(Some(parent)).await {
-        Ok(file) => {
-            let mut p = file.path().unwrap_or_default();
-            if p.extension().is_none() {
-                p.set_extension("png");
-            }
-            Some(p)
-        }
-        Err(_) => None,
+    dialog.set_default_filter(Some(&filter));
+
+    // Default filename: Screenshot_YYYY-MM-DD_HH-MM-SS.png
+    let stamp = chrono_like_stamp();
+    dialog.set_initial_name(Some(&format!("Screenshot_{stamp}.png")));
+
+    // Prefer ~/Pictures, then ~/, then leave unset.
+    if let Some(dir) = default_save_folder() {
+        dialog.set_initial_folder(Some(&dir));
     }
+
+    dialog.save(Some(parent), None::<&gio::Cancellable>, move |result| {
+        let path = match result {
+            Ok(file) => {
+                let mut p = file.path().unwrap_or_default();
+                if p.as_os_str().is_empty() {
+                    None
+                } else {
+                    if p.extension().is_none() {
+                        p.set_extension("png");
+                    }
+                    Some(p)
+                }
+            }
+            Err(e) => {
+                // User cancel is reported as a glib error with code Cancelled /
+                // dismissed — treat any error as "no path".
+                log::debug!("Save dialog closed: {e}");
+                None
+            }
+        };
+        on_done(path);
+    });
+}
+
+fn chrono_like_stamp() -> String {
+    glib::DateTime::now_local()
+        .ok()
+        .and_then(|dt| dt.format("%Y-%m-%d_%H-%M-%S").ok())
+        .map(|s| s.to_string())
+        .unwrap_or_else(|| "screenshot".to_string())
+}
+
+fn default_save_folder() -> Option<gio::File> {
+    // XDG Pictures, then home.
+    if let Some(pics) = glib::user_special_dir(glib::UserDirectory::Pictures) {
+        if pics.is_dir() {
+            return Some(gio::File::for_path(pics));
+        }
+    }
+    let home = glib::home_dir();
+    if !home.as_os_str().is_empty() {
+        return Some(gio::File::for_path(home));
+    }
+    None
 }
 
 fn save_png(surf: &ImageSurface, path: &std::path::Path) -> Result<()> {

@@ -7,6 +7,11 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+### Fixed
+- Save now opens a native path picker (FileDialog). The previous async
+  future panicked inside the selector's nested MainLoop, so no dialog
+  appeared. Cancel keeps the selector open.
+
 ## [0.1.1] - 2026-08-03
 
 ### Added
